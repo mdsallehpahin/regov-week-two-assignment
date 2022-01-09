@@ -1,0 +1,107 @@
+version: '3.8'
+services:
+  useraddress_server:
+    container_name: useraddress-api
+    ports: 
+      - 8446:8446
+    build:
+      context: ./useraddress-api/
+      dockerfile: ../Dockerfile
+      target: useraddress-api
+    image: useraddress-img
+    restart: unless-stopped
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - /usr/src/app
+    depends_on:
+      - mongo
+  userdetails_server:
+    container_name: userdetails-api
+    ports: 
+      - 8447:8447
+    build:
+      context: ./userdetails-api/
+      dockerfile: ../Dockerfile
+      target: userdetails-api
+    image: userdetails-img
+    restart: unless-stopped
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - /usr/src/app
+    depends_on:
+      - mongo
+
+  useredu_server:
+    container_name: useredu-api
+    ports: 
+      - 8445:8445
+    build:
+      context: ./useredu-api/
+      dockerfile: ../Dockerfile
+      target: useredu-api
+    image: useredu-img
+    restart: unless-stopped
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - /usr/src/app
+    depends_on:
+      - mongo
+
+  userjob_server:
+    container_name: userjob-api
+    ports: 
+      - 8444:8444
+    build:
+      context: ./userjob-api/
+      dockerfile: ../Dockerfile
+      target: userjob-api
+    image: userjob-img
+    restart: unless-stopped
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - /usr/src/app
+    depends_on:
+      - mongo
+
+  frontend_server:
+    container_name: frontend
+    ports: 
+      - 3000:3000
+    build:
+      context: ./frontend/
+      dockerfile: ../Dockerfile
+      target: frontend
+    image: frontend-img
+    restart: unless-stopped
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - /usr/src/app
+    depends_on:
+      - userjob_server
+      - useraddress_server
+      - userdetails_server
+      - useredu_server
+      
+  mongo:
+    image: mongo:4.4-bionic
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    networks:
+      - simple-exe-tier
+    volumes: 
+      - simple-exe-data:/data/db
+volumes:
+  simple-exe-data:
+    driver: local
+networks:
+  simple-exe-tier:
+    driver: bridge
+
+
+
